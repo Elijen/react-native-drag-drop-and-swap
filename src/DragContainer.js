@@ -23,16 +23,20 @@ const allOrientations = [
   'landscape', 'landscape-left', 'landscape-right'
 ];
 
+
 class DragModal extends React.Component {
   render() {
-    let {startPosition} = this.props.content;
-    return <Modal transparent={true} supportedOrientations={allOrientations}>
+    let { startPosition } = this.props.content;
+    return (
+      <Modal transparent={true} supportedOrientations={allOrientations}>
         <TouchableWithoutFeedback onPressIn={this.props.drop}>
           <Animated.View style={this.props.location.getLayout()}>
             {this.props.content.children}
           </Animated.View>
         </TouchableWithoutFeedback>
-    </Modal>
+        {this.props.containerContent}
+      </Modal>
+    )
   }
 }
 
@@ -217,7 +221,7 @@ class DragContainer extends React.Component {
     render() {
         return <View style={[{flex: 1}, this.props.style]} onLayout={e => this.containerLayout = e.nativeEvent.layout} {...this._panResponder.panHandlers}>
           {this.props.children}
-          {this.state.draggingComponent ? <DragModal content={this.state.draggingComponent} location={this.state.location} drop={this._handleDrop} /> : null}
+          {this.state.draggingComponent ? <DragModal content={this.state.draggingComponent} containerContent={this.props.containerContent} location={this.state.location} drop={this._handleDrop} /> : null}
         </View>;
     }
 }
