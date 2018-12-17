@@ -121,6 +121,12 @@ class DragContainer extends React.Component {
     }
 
     _handleDragging(point) {
+      const { onDrag } = this.props;
+
+      if(onDrag) {
+        onDrag(point);
+      }
+
       this._point = point;
       if (this._locked || !point) return;
       this.dropZones.forEach((zone) => {
