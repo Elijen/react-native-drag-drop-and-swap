@@ -33,13 +33,14 @@ class Draggable extends React.Component {
 
   render() {
     const { dragging } = this.context.dragContext;
-    const { data } = this.props;
+    const { data, delayLongPress } = this.props;
 
     let isDragging = dragging && dragging.data && data && data.index === dragging.data.index;
     return (
       <TouchableOpacity
         activeOpacity={this.props.activeOpacity}
         style={this.props.style}
+        delayLongPress={delayLongPress}
         onLongPress={this.props.dragOn === "onLongPress" ? this._initiateDrag : null}
         onPress={this.props.onPress}
         onPressIn={this.props.dragOn === "onPressIn" ? this._initiateDrag : null}
