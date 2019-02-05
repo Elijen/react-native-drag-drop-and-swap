@@ -20,7 +20,8 @@ class Draggable extends React.Component {
   };
 
   static propTypes = {
-    dragOn: PropTypes.oneOf(["onLongPress", "onPressIn"])
+    dragOn: PropTypes.oneOf(["onLongPress", "onPressIn"]),
+    delayLongPress: PropTypes.number
   };
 
   _initiateDrag() {
