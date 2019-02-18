@@ -32,6 +32,10 @@ class Draggable extends React.Component {
     dragOn: "onLongPress"
   };
 
+  componentWillUnmount() {
+    console.log("Draggable UNMOUNTING");
+  }
+
   render() {
     const { dragging } = this.context.dragContext;
     const { data, delayLongPress } = this.props;

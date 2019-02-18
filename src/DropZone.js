@@ -41,6 +41,7 @@ class DropZone extends React.Component {
     }
 
     componentWillUnmount() {
+      console.log("DropZone UNMOUNTING");
       this.context.dragContext.removeZone(this.refs.wrapper);
       clearInterval(this._timer);
     }
