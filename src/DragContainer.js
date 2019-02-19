@@ -1,11 +1,5 @@
-/*
- * @Author: Ranvir Gorai
- * @Date: 2018-01-30 15:04:08
- * @Last Modified by: Ranvir Gorai
- * @Last Modified time: 2018-01-30 15:04:08
- */
 import React from "react";
-import { View, PanResponder, Modal, Easing, Animated, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
+import { View, PanResponder, Modal, Easing, Animated, TouchableWithoutFeedback } from "react-native";
 import PropTypes from "prop-types";
 
 global.Easing = Easing;
@@ -13,6 +7,14 @@ global.Easing = Easing;
 const allOrientations = ["portrait", "portrait-upside-down", "landscape", "landscape-left", "landscape-right"];
 
 class DragModal extends React.Component {
+  componentWillUnmount() {
+    console.log("DragModal UNMOUNT");
+  }
+
+  componentWillMount() {
+    console.log("DragModal MOUNT");
+  }
+
   render() {
     const { content, renderContainerContent, location, drop } = this.props;
 
@@ -102,7 +104,6 @@ class DragContainer extends React.Component {
   };
 
   _handleDragging = point => {
-    console.log("dragging");
     const { onDrag } = this.props;
 
     if (point) {
