@@ -21,7 +21,7 @@ class DragModal extends React.Component {
     return (
       <Modal transparent={true} supportedOrientations={allOrientations}>
         <TouchableWithoutFeedback onPressIn={drop}>
-          <Animated.View shouldRasterizeIOS={true} style={location.getLayout()}>
+          <Animated.View style={location.getLayout()}>
             {content.children}
           </Animated.View>
         </TouchableWithoutFeedback>
