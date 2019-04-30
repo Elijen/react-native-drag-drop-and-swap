@@ -21,9 +21,7 @@ class DragModal extends React.Component {
     return (
       <Modal transparent={true} supportedOrientations={allOrientations}>
         <TouchableWithoutFeedback onPressIn={drop}>
-          <Animated.View style={location.getLayout()}>
-            {content.children}
-          </Animated.View>
+          <Animated.View style={location.getLayout()}>{content.children}</Animated.View>
         </TouchableWithoutFeedback>
         {renderContainerContent && renderContainerContent()}
       </Modal>
@@ -43,6 +41,7 @@ class DragContainer extends React.Component {
   state = {};
 
   location = new Animated.ValueXY();
+  finger = new Animated.ValueXY();
 
   static propTypes = {
     onDragStart: PropTypes.func,
@@ -117,7 +116,7 @@ class DragContainer extends React.Component {
     this._point = point;
     if (this._locked || !point) return;
     this.dropZones.forEach(zone => {
-      if (this.inZone(point, zone)) {
+      if (this.inZone({ x: this.finger.x._value, y: this.finger.y._value }, zone)) {
         zone.onEnter(point);
       } else {
         zone.onLeave(point);
@@ -129,7 +128,7 @@ class DragContainer extends React.Component {
     let hitZones = [];
     this.dropZones.forEach(zone => {
       if (!this._point) return;
-      if (this.inZone(this._point, zone)) {
+      if (this.inZone({ x: this.finger.x._value, y: this.finger.y._value }, zone)) {
         hitZones.push(zone);
         zone.onDrop(this.state.draggingComponent.data);
       }
@@ -173,6 +172,8 @@ class DragContainer extends React.Component {
       onPanResponderMove: Animated.event([
         null,
         {
+          moveX: this.finger.x,
+          moveY: this.finger.y,
           dx: this.location.x, // x,y are Animated.Value
           dy: this.location.y
         }
