@@ -1,6 +1,7 @@
 import React from "react";
 import { View, PanResponder, Modal, Easing, Animated, TouchableWithoutFeedback } from "react-native";
 import PropTypes from "prop-types";
+import { debounce } from "lodash";
 
 global.Easing = Easing;
 
@@ -90,8 +91,13 @@ class DragContainer extends React.Component {
     }
   };
 
-  inZone = ({ x, y }, zone) => {
-    return zone.x <= x && zone.width + zone.x >= x && zone.y <= y && zone.height + zone.y >= y;
+  inZone = zone => {
+    return (
+      zone.x <= this.finger.x._value &&
+      zone.width + zone.x >= this.finger.x._value &&
+      zone.y <= this.finger.y._value &&
+      zone.height + zone.y >= this.finger.y._value
+    );
   };
 
   _addLocationOffset = point => {
@@ -102,33 +108,40 @@ class DragContainer extends React.Component {
     };
   };
 
-  _handleDragging = point => {
-    const { onDrag } = this.props;
+  _handleDragging = debounce(
+    point => {
+      const { onDrag } = this.props;
 
-    if (point) {
-      point = this._addLocationOffset(point);
-    }
-
-    if (onDrag) {
-      onDrag(point);
-    }
-
-    this._point = point;
-    if (this._locked || !point) return;
-    this.dropZones.forEach(zone => {
-      if (this.inZone({ x: this.finger.x._value, y: this.finger.y._value }, zone)) {
-        zone.onEnter(point);
-      } else {
-        zone.onLeave(point);
+      if (point) {
+        point = this._addLocationOffset(point);
       }
-    });
-  };
+
+      if (onDrag) {
+        onDrag(point);
+      }
+
+      this._point = point;
+      if (this._locked || !point) return;
+      this.dropZones.forEach(zone => {
+        if (this.inZone(zone)) {
+          zone.onEnter(point);
+        } else {
+          zone.onLeave(point);
+        }
+      });
+    },
+    25,
+    {
+      leading: true,
+      trailing: true
+    }
+  );
 
   _handleDrop = () => {
     let hitZones = [];
     this.dropZones.forEach(zone => {
       if (!this._point) return;
-      if (this.inZone({ x: this.finger.x._value, y: this.finger.y._value }, zone)) {
+      if (this.inZone(zone)) {
         hitZones.push(zone);
         zone.onDrop(this.state.draggingComponent.data);
       }
