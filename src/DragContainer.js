@@ -1,5 +1,5 @@
 import React from "react";
-import { View, PanResponder, Modal, Easing, Animated, TouchableWithoutFeedback } from "react-native";
+import { View, PanResponder, Modal, Easing, Animated, TouchableWithoutFeedback, Platform } from "react-native";
 import PropTypes from "prop-types";
 import { debounce } from "lodash";
 
@@ -22,7 +22,9 @@ class DragModal extends React.Component {
     return (
       <Modal transparent={true} supportedOrientations={allOrientations}>
         <TouchableWithoutFeedback onPressIn={drop}>
-          <Animated.View style={location.getLayout()}>{content.children}</Animated.View>
+          <Animated.View renderToHardwareTextureAndroid={true} style={location.getLayout()}>
+            {content.children}
+          </Animated.View>
         </TouchableWithoutFeedback>
         {renderContainerContent && renderContainerContent()}
       </Modal>
@@ -108,8 +110,31 @@ class DragContainer extends React.Component {
     };
   };
 
+  _handleDraggingAndroid = point => {
+    const { onDrag } = this.props;
+
+    if (point) {
+      point = this._addLocationOffset(point);
+    }
+
+    if (onDrag) {
+      onDrag(point);
+    }
+
+    this._point = point;
+    if (this._locked || !point) return;
+    this.dropZones.forEach(zone => {
+      if (this.inZone(zone)) {
+        zone.onEnter(point);
+      } else {
+        zone.onLeave(point);
+      }
+    });
+  };
+
   _handleDragging = debounce(
     point => {
+      console.log(point);
       const { onDrag } = this.props;
 
       if (point) {
@@ -171,7 +196,9 @@ class DragContainer extends React.Component {
   };
 
   componentWillMount() {
-    this._listener = this.location.addListener(this._handleDragging);
+    this._listener = this.location.addListener(
+      Platform.OS === "android" ? this._handleDraggingAndroid : this._handleDragging
+    );
     this._panResponder = PanResponder.create({
       // Ask to be the responder:
       onStartShouldSetPanResponder: () => {
